@@ -1,5 +1,5 @@
 const express = require("express");
-const { User, Account } = require("../models/db");
+const { Account } = require("../models/db");
 const router = express.Router({ mergeParams: true });
 const { authMiddleware } = require("../middlewares");
 const { default: mongoose } = require("mongoose");
@@ -42,12 +42,7 @@ router.post("/transfer", async (req, res) => {
     await session.abortTransaction();
     return res.status(400).json({ message: "Account doesn't exits" });
   }
-  // const toUserAccount = await User.findOne({ username: to });
 
-  // if (!toUserAccount) {
-  //   await session.abortTransaction();
-  //   return res.status(400).json({ message: "Account doesn't exits" });
-  // }
   const toUser = await Account.findOne({ userId: to });
 
   if (!toUser) {

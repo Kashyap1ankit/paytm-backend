@@ -5,7 +5,7 @@ const cors = require("cors");
 
 const rootRouter = require("./routes/index");
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 //Essential Middlewares
 
