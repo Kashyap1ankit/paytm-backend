@@ -177,7 +177,7 @@ router.put("/", async (req, res) => {
 
 //-------------------------------------------------Get All User--------------------------------------------------------------------
 
-router.get("/all", authMiddleware, async (req, res) => {
+router.get("/all", async (req, res) => {
   const allUser = await User.find();
   if (allUser && allUser.length <= 0) {
     return res.status(404).json({ message: "Users not found" });
@@ -195,7 +195,7 @@ router.get("/all", authMiddleware, async (req, res) => {
 
 //-------------------------------------------------Search Users Route--------------------------------------------------------------------
 
-router.get("/bulk", authMiddleware, async (req, res) => {
+router.get("/bulk", async (req, res) => {
   const { filter } = req.query;
 
   const getUser = await User.find({ username: filter });
@@ -212,6 +212,20 @@ router.get("/bulk", authMiddleware, async (req, res) => {
   });
 });
 
+//-------------------------------------------------Delete Users Route--------------------------------------------------------------------
+
+router.delete("/destroy", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    let user = await User.findByIdAndDelete(userId);
+    let account = await Account.findOneAndDelete({ userId: userId });
+    if (!user) throw new Error();
+    if (!account) throw new Error();
+    res.status(200).json({ message: "successfully deleted" });
+  } catch (error) {
+    res.status(404).json({ message: "Error occured" });
+  }
+});
 //Error Handler
 
 router.use((err, req, res, next) => {
