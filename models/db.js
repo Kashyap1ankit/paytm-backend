@@ -36,6 +36,12 @@ const userSchema = new Schema({
     required: true,
     minLength: 6,
   },
+  transaction: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Transaction",
+    },
+  ],
 });
 
 const User = mongoose.model("User", userSchema);
@@ -57,4 +63,29 @@ const accountSchema = new Schema({
 
 const Account = mongoose.model("Account", accountSchema);
 
-module.exports = { User, Account };
+//Transaction Schema
+
+const transSchema = new Schema({
+  toId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  fromId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+  time: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const Transaction = mongoose.model("Transaction", transSchema);
+
+module.exports = { User, Account, Transaction };

@@ -8,7 +8,7 @@ const {
   updateSchema,
 } = require("../schema");
 const { authMiddleware } = require("../middlewares");
-const { User, Account } = require("../models/db");
+const { User, Account, Transaction } = require("../models/db");
 const bcrypt = require("bcrypt");
 
 router.use(express.urlencoded({ extended: true }));
@@ -70,6 +70,17 @@ router.post("/signup", async (req, res) => {
   });
 
   await initalBalance.save();
+
+  // const firstTrans = new Transaction({
+  //   toId: newUser.id,
+  //   fromId: "65fd4ca4b863410a7816d8a7",
+  //   amount: balance,
+  // });
+
+  // await firstTrans.save();
+
+  // newUser.transaction.push(firstTrans);
+  // await newUser.save();
 
   //Generating the jwt token
 
@@ -231,6 +242,29 @@ router.delete("/destroy", async (req, res) => {
 router.use((err, req, res, next) => {
   res.status(400).json({ err: err.message });
   next();
+});
+
+//-------------------------------------------------All transaction Users Route--------------------------------------------------------------------
+
+router.get("/transaction", async (req, res) => {
+  const { userId } = req.body;
+
+  const credits = await Transaction.find({ toId: userId });
+  const debits = await Transaction.find({ fromId: userId });
+
+  // Adding type property to each object in credits array
+  const creditsWithType = credits.map((credit) => ({
+    ...credit.toObject(),
+    type: "credit",
+  }));
+
+  // Adding type property to each object in debits array
+  const debitsWithType = debits.map((debit) => ({
+    ...debit.toObject(),
+    type: "debit",
+  }));
+
+  return res.json({ txns: [...creditsWithType, ...debitsWithType] });
 });
 
 module.exports = router;
